@@ -9,19 +9,10 @@ import { SetupWizard } from './components/SetupWizard'
 import { LineChart, Sparkline } from './components/LineChart'
 import { NotificationBell } from './components/NotificationBell'
 import { Tooltip, TooltipContent } from './components/Tooltip'
-import { ErrorBoundary } from './components/ErrorBoundary'
 import type {
-  Status, Config, LogEntry, Signal, Position, PortfolioSnapshot,
+  Status, Config, LogEntry, Signal, Position, SignalResearch, PortfolioSnapshot,
   RegimeState, RiskMetrics, AlphaSignal, MarketRegime,
 } from './types'
-
-interface StrategyStatus {
-  name: string
-  status: 'active' | 'idle'
-  lastActivity: string | null
-  lastAction: string | null
-  fillsToday: number
-}
 
 const API_BASE = '/api'
 
@@ -59,6 +50,18 @@ function isCryptoSymbol(symbol: string, cryptoSymbols: string[] = []): boolean {
     symbol.includes('BTC') || symbol.includes('ETH') || symbol.includes('SOL')
 }
 
+function getVerdictColor(verdict: string): string {
+  if (verdict === 'BUY')  return 'text-hud-success'
+  if (verdict === 'SKIP') return 'text-hud-error'
+  return 'text-hud-warning'
+}
+
+function getQualityColor(quality: string): string {
+  if (quality === 'excellent') return 'text-hud-success'
+  if (quality === 'good')      return 'text-hud-primary'
+  if (quality === 'fair')      return 'text-hud-warning'
+  return 'text-hud-error'
+}
 
 function getSentimentColor(score: number): string {
   if (score >= 0.3)  return 'text-hud-success'
@@ -185,7 +188,6 @@ export default function App() {
   const [regime, setRegime] = useState<RegimeState | null>(null)
   const [riskMetrics, setRiskMetrics] = useState<RiskMetrics | null>(null)
   const [alphaSignals, setAlphaSignals] = useState<AlphaSignal[]>([])
-  const [strategyStatuses, setStrategyStatuses] = useState<StrategyStatus[]>([])
 
   // ── Setup check ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -293,21 +295,6 @@ export default function App() {
     return () => clearInterval(id)
   }, [setupChecked, showSetup])
 
-  // ── V3: strategy runner status ─────────────────────────────────────────────
-  useEffect(() => {
-    if (!setupChecked || showSetup) return
-    const fetch$ = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/v3/strategies`)
-        const json = await res.json()
-        if (json.ok && json.data?.strategies) setStrategyStatuses(json.data.strategies)
-      } catch { /* dashboard-api not up */ }
-    }
-    fetch$()
-    const id = setInterval(fetch$, 30_000)
-    return () => clearInterval(id)
-  }, [setupChecked, showSetup])
-
   // ── Auto-scroll logs ───────────────────────────────────────────────────────
   useEffect(() => {
     logsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -389,7 +376,6 @@ export default function App() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <ErrorBoundary title="NIGHTWATCHER RENDER ERROR">
     <div className="min-h-screen bg-hud-bg transition-colors duration-500">
       {/* drifting amber scanline */}
       <div className="nw-scanline" />
@@ -949,69 +935,68 @@ export default function App() {
             </Panel>
           </div>
 
-          {/* Strategy Runner Status */}
+          {/* Signal Research */}
           <div className="col-span-4 md:col-span-8 lg:col-span-4">
-            <ErrorBoundary title="STRATEGY STATUS ERROR">
-              <Panel
-                title="STRATEGY STATUS"
-                titleRight={
-                  strategyStatuses.length > 0
-                    ? `${strategyStatuses.filter(s => s.status === 'active').length}/${strategyStatuses.length} ACTIVE`
-                    : '—'
-                }
-                className="h-80"
-              >
-                <div className="overflow-y-auto h-full space-y-1">
-                  {strategyStatuses.length === 0 ? (
-                    <div className="hud-label text-hud-text-dim py-6 text-center space-y-1">
-                      <div>No strategies detected</div>
-                      <div className="opacity-50 text-[8px]">Start via ./start.sh</div>
-                    </div>
-                  ) : (
-                    strategyStatuses.map((s, i) => {
-                      const isActive = s.status === 'active'
-                      const lastTime = s.lastActivity
-                        ? new Date(s.lastActivity).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
-                        : null
-                      const stratLabel = s.name.replace(/-/g, ' ').toUpperCase()
-                      return (
-                        <motion.div
-                          key={s.name}
-                          initial={{ opacity: 0, x: -6 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.04 }}
-                          className="p-2 border border-hud-line/20 hover:border-hud-line/40 transition-colors"
-                        >
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2">
-                              <div className={clsx(
-                                'w-1.5 h-1.5 rounded-full shrink-0',
-                                isActive ? 'bg-hud-success animate-pulse' : 'bg-hud-text-dim opacity-40'
-                              )} />
-                              <span className="hud-value-sm text-hud-text-bright">{stratLabel}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {s.fillsToday > 0 && (
-                                <span className="hud-label text-hud-success">{s.fillsToday} FILL{s.fillsToday > 1 ? 'S' : ''}</span>
-                              )}
-                              <span className={clsx('hud-label font-bold', isActive ? 'text-hud-success' : 'text-hud-text-dim opacity-40')}>
-                                {isActive ? 'RUN' : 'IDLE'}
-                              </span>
-                            </div>
+            <Panel title="SIGNAL RESEARCH" titleRight={Object.keys(status?.signalResearch || {}).length.toString()} className="h-80">
+              <div className="overflow-y-auto h-full space-y-2">
+                {Object.entries(status?.signalResearch || {}).length === 0 ? (
+                  <div className="hud-label text-hud-text-dim py-6 text-center">Researching candidates…</div>
+                ) : (
+                  Object.entries(status?.signalResearch || {}).map(([symbol, research]: [string, SignalResearch]) => (
+                    <Tooltip key={symbol} position="left" content={
+                      <div className="space-y-2 min-w-[200px]">
+                        <div className="hud-label text-hud-primary border-b border-hud-line/50 pb-1">{symbol} DETAILS</div>
+                        <div className="space-y-1">
+                          <div className="flex justify-between"><span className="text-hud-text-dim">Confidence</span><span className="text-hud-text-bright">{(research.confidence * 100).toFixed(0)}%</span></div>
+                          <div className="flex justify-between"><span className="text-hud-text-dim">Sentiment</span><span className={getSentimentColor(research.sentiment)}>{(research.sentiment * 100).toFixed(0)}%</span></div>
+                          <div className="flex justify-between"><span className="text-hud-text-dim">Analyzed</span><span className="text-hud-text">{new Date(research.timestamp).toLocaleTimeString('en-US', { hour12: false })}</span></div>
+                        </div>
+                        {research.catalysts.length > 0 && (
+                          <div className="pt-1 border-t border-hud-line/30">
+                            <span className="text-[9px] text-hud-text-dim">CATALYSTS:</span>
+                            <ul className="mt-1 space-y-0.5">{research.catalysts.map((c, i) => <li key={i} className="text-[10px] text-hud-success">+ {c}</li>)}</ul>
                           </div>
-                          {s.lastAction && (
-                            <p className="text-[10px] text-hud-text-dim leading-tight truncate">
-                              {lastTime && <span className="text-hud-text-dim opacity-60 mr-1.5">{lastTime}</span>}
-                              {s.lastAction.length > 60 ? s.lastAction.slice(0, 60) + '…' : s.lastAction}
-                            </p>
-                          )}
-                        </motion.div>
-                      )
-                    })
-                  )}
-                </div>
-              </Panel>
-            </ErrorBoundary>
+                        )}
+                        {research.red_flags.length > 0 && (
+                          <div className="pt-1 border-t border-hud-line/30">
+                            <span className="text-[9px] text-hud-text-dim">RED FLAGS:</span>
+                            <ul className="mt-1 space-y-0.5">{research.red_flags.map((f, i) => <li key={i} className="text-[10px] text-hud-error">− {f}</li>)}</ul>
+                          </div>
+                        )}
+                      </div>
+                    }>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="p-2 border border-hud-line/25 hover:border-hud-line/50 cursor-help transition-colors"
+                      >
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="hud-value-sm text-hud-text-bright">{symbol}</span>
+                          <div className="flex items-center gap-2">
+                            <span className={clsx('hud-label', getQualityColor(research.entry_quality))}>
+                              {research.entry_quality.toUpperCase()}
+                            </span>
+                            <span className={clsx('hud-value-sm font-bold', getVerdictColor(research.verdict))}>
+                              {research.verdict}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-hud-text-dim leading-tight mb-1">{research.reasoning}</p>
+                        {research.red_flags.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {research.red_flags.slice(0, 2).map((flag, i) => (
+                              <span key={i} className="text-xs text-hud-error bg-hud-error/10 px-1">
+                                {flag.slice(0, 30)}…
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </motion.div>
+                    </Tooltip>
+                  ))
+                )}
+              </div>
+            </Panel>
           </div>
 
         </div>{/* /grid */}
@@ -1077,6 +1062,5 @@ export default function App() {
         )}
       </AnimatePresence>
     </div>
-    </ErrorBoundary>
   )
 }

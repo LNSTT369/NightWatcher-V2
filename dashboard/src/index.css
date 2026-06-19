@@ -1,180 +1,106 @@
 @import "tailwindcss";
 
 @theme {
-  /* void black foundation */
-  --color-hud-bg: #07090a;
-  --color-hud-bg-panel: #0b0e11;
-
-  /* amber phosphor — the dominant accent */
-  --color-hud-primary: #c07c20;
-  --color-hud-dim: #382810;
-  --color-hud-line: rgba(192, 124, 32, 0.09);
-  --color-hud-border: rgba(192, 124, 32, 0.18);
-
-  /* phosphor text scale */
-  --color-hud-text: #8a7450;
-  --color-hud-text-dim: #4a3e28;
-  --color-hud-text-bright: #e0c888;
-
-  /* signal colors */
-  --color-hud-success: #28c870;   /* electric jade */
-  --color-hud-warning: #d87820;   /* amber-orange */
-  --color-hud-error: #e83838;     /* crimson */
-  --color-hud-purple: #8858c0;    /* violet */
-  --color-hud-cyan: #48a0c0;      /* ice */
-  --color-hud-blue: #4878c0;
-  --color-hud-green: #28c870;
-  --color-hud-yellow: #e0a030;
-  --color-hud-red: #e83838;
-
+  --color-hud-bg: #0a0c0e;
+  --color-hud-bg-panel: #0d1012;
+  
+  --color-hud-primary: #7a9ba8;
+  --color-hud-dim: #3a4a52;
+  --color-hud-line: rgba(122, 155, 168, 0.15);
+  --color-hud-border: rgba(122, 155, 168, 0.2);
+  
+  --color-hud-text: #7a9ba8;
+  --color-hud-text-dim: #4a5a62;
+  --color-hud-text-bright: #c8dce4;
+  
+  --color-hud-success: #4a9868;
+  --color-hud-warning: #b89848;
+  --color-hud-error: #b84848;
+  --color-hud-purple: #8a6ab8;
+  --color-hud-cyan: #5a9ab8;
+  --color-hud-blue: #5a7ab8;
+  --color-hud-green: #4a9868;
+  --color-hud-yellow: #b89848;
+  --color-hud-red: #b84848;
+  
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
-  --font-display: 'Oswald', 'Impact', sans-serif;
-  --font-label: 'Barlow Condensed', 'Oswald', sans-serif;
 }
-
-/* warm parchment light theme */
 :root.light {
-  --color-hud-bg: #f2ede0;
-  --color-hud-bg-panel: #faf6ec;
-  --color-hud-primary: #9a6010;
-  --color-hud-dim: #d8c89a;
-  --color-hud-line: rgba(154, 96, 16, 0.14);
-  --color-hud-border: rgba(154, 96, 16, 0.22);
-  --color-hud-text: #5a4220;
-  --color-hud-text-dim: #8a7050;
-  --color-hud-text-bright: #180e00;
-  --color-hud-success: #187840;
-  --color-hud-warning: #a05010;
-  --color-hud-error: #b82020;
-  --color-hud-purple: #602898;
-  --color-hud-cyan: #205878;
+  --color-hud-bg: #f8fafc;
+  --color-hud-bg-panel: #ffffff;
+  
+  --color-hud-primary: #5a7a88;
+  --color-hud-dim: #cbd5e1;
+  --color-hud-line: rgba(90, 122, 136, 0.2);
+  --color-hud-border: rgba(90, 122, 136, 0.25);
+  
+  --color-hud-text: #334155;
+  --color-hud-text-dim: #64748b;
+  --color-hud-text-bright: #0f172a;
+  
+  /* Adjust status colors for better contrast on light bg */
+  --color-hud-success: #15803d;
+  --color-hud-warning: #b45309;
+  --color-hud-error: #b91c1c;
+  --color-hud-purple: #7e22ce;
+  --color-hud-cyan: #0e7490;
 }
 
-/* ─── Keyframes ─────────────────────────────────────────────────── */
-@keyframes nw-scan {
-  0%   { transform: translateY(-80px); }
-  100% { transform: translateY(100vh); }
-}
-
-@keyframes nw-pulse-ring {
-  0%   { transform: scale(1); opacity: 0.9; }
-  100% { transform: scale(2.8); opacity: 0; }
-}
-
-@keyframes nw-flicker {
-  0%, 89%, 91%, 94%, 96%, 100% { opacity: 1; }
-  90%  { opacity: 0.82; }
-  93%  { opacity: 0.92; }
-  95%  { opacity: 0.86; }
-}
-
-@keyframes nw-regime-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
-}
-
-/* ─── Base ──────────────────────────────────────────────────────── */
 @layer base {
-  * { box-sizing: border-box; }
-
+  * {
+    box-sizing: border-box;
+  }
+  
   html {
     font-family: var(--font-mono);
     font-size: 10px;
     background-color: var(--color-hud-bg);
     color: var(--color-hud-text);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
   }
-
+  
   body {
     margin: 0;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
-    /* amber dot grid overlay — very subtle */
-    background-image: radial-gradient(
-      circle,
-      rgba(192, 124, 32, 0.022) 1px,
-      transparent 1px
-    );
-    background-size: 26px 26px;
   }
 
-  ::-webkit-scrollbar        { width: 3px; height: 3px; }
-  ::-webkit-scrollbar-track  { background: var(--color-hud-bg); }
-  ::-webkit-scrollbar-thumb  { background: var(--color-hud-dim); }
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--color-hud-bg);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-hud-dim);
+    border-radius: 2px;
+  }
 }
 
-/* ─── Components ────────────────────────────────────────────────── */
 @layer components {
-
-  /* drifting scanline */
-  .nw-scanline {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 80px;
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      rgba(192, 124, 32, 0.010) 35%,
-      rgba(192, 124, 32, 0.022) 50%,
-      rgba(192, 124, 32, 0.010) 65%,
-      transparent 100%
-    );
-    pointer-events: none;
-    z-index: 9999;
-    animation: nw-scan 16s linear infinite;
-  }
-
-  /* panel with amber left accent + corner brackets */
   .hud-panel {
-    position: relative;
     background: var(--color-hud-bg-panel);
     border: 0.5px solid var(--color-hud-line);
-    border-left: 2px solid var(--panel-accent, var(--color-hud-primary));
-    transition: border-left-color 0.6s ease, box-shadow 0.6s ease;
   }
-
-  /* top-right corner bracket */
-  .hud-panel::before {
-    content: '';
-    position: absolute;
-    top: -1px; right: -1px;
-    width: 7px; height: 7px;
-    border-top: 1px solid var(--panel-accent, var(--color-hud-primary));
-    border-right: 1px solid var(--panel-accent, var(--color-hud-primary));
-    opacity: 0.55;
-    transition: border-color 0.6s ease;
-  }
-
-  /* bottom-right corner bracket */
-  .hud-panel::after {
-    content: '';
-    position: absolute;
-    bottom: -1px; right: -1px;
-    width: 7px; height: 7px;
-    border-bottom: 1px solid var(--panel-accent, var(--color-hud-primary));
-    border-right: 1px solid var(--panel-accent, var(--color-hud-primary));
-    opacity: 0.35;
-    transition: border-color 0.6s ease;
-  }
-
-  /* typography */
+  
   .hud-label {
-    font-family: var(--font-label);
-    font-size: 9px;
-    font-weight: 500;
+    font-size: 8px;
     text-transform: uppercase;
-    letter-spacing: 0.20em;
+    letter-spacing: 0.15em;
     color: var(--color-hud-text-dim);
   }
-
+  
   .hud-value-xl {
-    font-size: 38px;
+    font-size: 36px;
     font-weight: 300;
     letter-spacing: -0.02em;
     line-height: 1;
     color: var(--color-hud-text-bright);
   }
-
+  
   .hud-value-lg {
     font-size: 24px;
     font-weight: 300;
@@ -182,14 +108,14 @@
     line-height: 1;
     color: var(--color-hud-text-bright);
   }
-
+  
   .hud-value-md {
     font-size: 14px;
     font-weight: 400;
     line-height: 1;
     color: var(--color-hud-text);
   }
-
+  
   .hud-value-sm {
     font-size: 11px;
     font-weight: 400;
@@ -197,11 +123,9 @@
     color: var(--color-hud-text);
   }
 
-  /* form controls */
   .hud-input {
     background: var(--color-hud-bg);
     border: 0.5px solid var(--color-hud-line);
-    border-left: 2px solid var(--color-hud-dim);
     color: var(--color-hud-text);
     font-family: var(--font-mono);
     font-size: 11px;
@@ -209,54 +133,31 @@
     outline: none;
     transition: border-color 0.2s;
   }
-  .hud-input:focus { border-left-color: var(--color-hud-primary); }
+
+  .hud-input:focus {
+    border-color: var(--color-hud-primary);
+  }
 
   .hud-button {
     background: transparent;
     border: 0.5px solid var(--color-hud-primary);
     color: var(--color-hud-primary);
-    font-family: var(--font-label);
+    font-family: var(--font-mono);
     font-size: 10px;
-    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.1em;
     padding: 8px 16px;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.2s;
   }
+
   .hud-button:hover {
     background: var(--color-hud-primary);
     color: var(--color-hud-bg);
   }
-  .hud-button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* brand mark */
-  .nw-brand {
-    font-family: var(--font-display);
-    font-weight: 400;
-    color: var(--color-hud-text-bright);
-    animation: nw-flicker 20s ease-in-out infinite;
-  }
-
-  /* live pulse indicator */
-  .nw-live-dot {
-    position: relative;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--color-hud-success);
-    flex-shrink: 0;
-  }
-  .nw-live-dot::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: var(--color-hud-success);
-    animation: nw-pulse-ring 2.2s ease-out infinite;
-  }
-
-  /* crisis regime pulse */
-  .nw-crisis-pulse {
-    animation: nw-regime-pulse 1.2s ease-in-out infinite;
+  .hud-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
