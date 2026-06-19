@@ -10,9 +10,6 @@
 
 `TypeScript` &nbsp;·&nbsp; `Cloudflare Workers` &nbsp;·&nbsp; `MCP` &nbsp;·&nbsp; `Alpaca` &nbsp;·&nbsp; `D1`
 
-*Companion repository for the Alpaca Markets blog article:*
-**"Building NightWatcher V2 — A Multi-Agent Trading System with Alpaca"**
-
 </div>
 
 ---
