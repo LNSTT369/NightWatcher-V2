@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIGHTWATCHER V3 — Architecture</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #060810;
+    color: #e2e8f0;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Grid background ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .header-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: #38bdf8;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .header-title {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #f8fafc 0%, #38bdf8 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+
+  .header-subtitle {
+    margin-top: 14px;
+    font-size: 13px;
+    color: #64748b;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Section labels ── */
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #475569;
+    margin-bottom: 20px;
+    padding-left: 4px;
+    border-left: 2px solid #334155;
+    padding-left: 10px;
+  }
+
+  /* ── Ingress row ── */
+  .ingress-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  /* ── Boxes ── */
+  .box {
+    border-radius: 10px;
+    border: 1px solid;
+    padding: 18px 20px;
+    position: relative;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .box:hover {
+    transform: translateY(-2px);
+  }
+
+  .box-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .box-desc {
+    font-size: 11px;
+    line-height: 1.6;
+    color: #94a3b8;
+  }
+
+  .box-tag {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-top: 8px;
+  }
+
+  /* Colour themes */
+  .theme-sky {
+    border-color: rgba(56, 189, 248, 0.25);
+    background: rgba(56, 189, 248, 0.04);
+  }
+  .theme-sky .box-title { color: #38bdf8; }
+  .theme-sky .box-tag { background: rgba(56, 189, 248, 0.12); color: #38bdf8; }
+  .theme-sky:hover { box-shadow: 0 8px 32px rgba(56, 189, 248, 0.08); }
+
+  .theme-violet {
+    border-color: rgba(139, 92, 246, 0.25);
+    background: rgba(139, 92, 246, 0.04);
+  }
+  .theme-violet .box-title { color: #a78bfa; }
+  .theme-violet .box-tag { background: rgba(139, 92, 246, 0.12); color: #a78bfa; }
+  .theme-violet:hover { box-shadow: 0 8px 32px rgba(139, 92, 246, 0.08); }
+
+  .theme-emerald {
+    border-color: rgba(52, 211, 153, 0.25);
+    background: rgba(52, 211, 153, 0.04);
+  }
+  .theme-emerald .box-title { color: #34d399; }
+  .theme-emerald .box-tag { background: rgba(52, 211, 153, 0.12); color: #34d399; }
+  .theme-emerald:hover { box-shadow: 0 8px 32px rgba(52, 211, 153, 0.08); }
+
+  .theme-amber {
+    border-color: rgba(251, 191, 36, 0.25);
+    background: rgba(251, 191, 36, 0.04);
+  }
+  .theme-amber .box-title { color: #fbbf24; }
+  .theme-amber .box-tag { background: rgba(251, 191, 36, 0.12); color: #fbbf24; }
+  .theme-amber:hover { box-shadow: 0 8px 32px rgba(251, 191, 36, 0.08); }
+
+  .theme-rose {
+    border-color: rgba(251, 113, 133, 0.25);
+    background: rgba(251, 113, 133, 0.04);
+  }
+  .theme-rose .box-title { color: #fb7185; }
+  .theme-rose .box-tag { background: rgba(251, 113, 133, 0.12); color: #fb7185; }
+  .theme-rose:hover { box-shadow: 0 8px 32px rgba(251, 113, 133, 0.08); }
+
+  .theme-slate {
+    border-color: rgba(148, 163, 184, 0.15);
+    background: rgba(148, 163, 184, 0.03);
+  }
+  .theme-slate .box-title { color: #94a3b8; }
+  .theme-slate .box-tag { background: rgba(148, 163, 184, 0.10); color: #94a3b8; }
+
+  /* ── Arrow ── */
+  .arrow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 8px 0;
+  }
+
+  .arrow-line {
+    width: 1px;
+    height: 32px;
+    background: linear-gradient(to bottom, #1e3a5f, #334155);
+    margin: 0 auto;
+  }
+
+  .arrow-tip {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid #334155;
+    margin: 0 auto;
+  }
+
+  .arrow-label {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #475569;
+    text-align: center;
+    margin: 4px 0;
+  }
+
+  /* ── Flow arrow container ── */
+  .flow-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 4px 0;
+  }
+
+  /* ── Main pipeline ── */
+  .pipeline {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-bottom: 40px;
+  }
+
+  /* Core node — bigger */
+  .core-node {
+    border-radius: 12px;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    background: rgba(14, 28, 48, 0.9);
+    padding: 24px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .core-node::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+  }
+
+  .core-node-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #38bdf8;
+    margin-bottom: 4px;
+  }
+
+  .core-node-sub {
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 16px;
+  }
+
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 6px;
+  }
+
+  .tool-chip {
+    font-size: 10px;
+    padding: 5px 9px;
+    border-radius: 5px;
+    background: rgba(56, 189, 248, 0.07);
+    border: 1px solid rgba(56, 189, 248, 0.12);
+    color: #7dd3fc;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── Order flow section ── */
+  .order-flow-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+    align-items: start;
+    margin-bottom: 40px;
+  }
+
+  .order-flow-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 28px;
+    gap: 0;
+  }
+
+  .h-arrow-line {
+    height: 1px;
+    width: 32px;
+    background: #334155;
+  }
+
+  .h-arrow-tip {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 7px solid #334155;
+  }
+
+  /* ── Storage row ── */
+  .storage-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  /* ── Policy engine ── */
+  .policy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+
+  .policy-chip {
+    font-size: 10px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    background: rgba(251, 191, 36, 0.05);
+    border: 1px solid rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    letter-spacing: 0.03em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .policy-chip::before {
+    content: '✓';
+    font-size: 9px;
+    color: rgba(251, 191, 36, 0.5);
+  }
+
+  /* ── Alpha socket highlight ── */
+  .alpha-socket {
+    border-radius: 12px;
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    background: rgba(4, 20, 14, 0.9);
+    padding: 24px 28px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+
+  .alpha-socket::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #34d399, transparent);
+  }
+
+  .alpha-socket-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #34d399;
+    margin-bottom: 4px;
+  }
+
+  .alpha-socket-sub {
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 16px;
+  }
+
+  .interface-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  .iface-box {
+    border-radius: 7px;
+    border: 1px solid rgba(52, 211, 153, 0.15);
+    background: rgba(52, 211, 153, 0.04);
+    padding: 12px 14px;
+  }
+
+  .iface-method {
+    font-size: 10px;
+    font-weight: 700;
+    color: #34d399;
+    letter-spacing: 0.1em;
+    margin-bottom: 2px;
+  }
+
+  .iface-path {
+    font-size: 11px;
+    color: #7dd3fc;
+    margin-bottom: 4px;
+  }
+
+  .iface-desc {
+    font-size: 10px;
+    color: #64748b;
+    line-height: 1.5;
+  }
+
+  /* ── Execution partner ── */
+  .partner-box {
+    border-radius: 12px;
+    border: 1px solid rgba(251, 113, 133, 0.25);
+    background: rgba(20, 6, 10, 0.9);
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+
+  .partner-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #fb7185, transparent);
+  }
+
+  .partner-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #fb7185;
+    margin-bottom: 4px;
+  }
+
+  .partner-sub {
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 12px;
+  }
+
+  .partner-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #f1f5f9;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #475569;
+    margin-top: 3px;
+  }
+
+  /* ── Cron table ── */
+  .cron-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 40px;
+  }
+
+  .cron-table th {
+    text-align: left;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #475569;
+    padding: 8px 12px;
+    border-bottom: 1px solid #1e293b;
+  }
+
+  .cron-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #0f172a;
+    color: #94a3b8;
+    vertical-align: top;
+  }
+
+  .cron-table td:first-child {
+    color: #38bdf8;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .cron-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* ── Disclaimer ── */
+  .disclaimer {
+    border-radius: 8px;
+    border: 1px solid #1e293b;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 16px 20px;
+    font-size: 10px;
+    color: #475569;
+    line-height: 1.7;
+    margin-top: 48px;
+  }
+
+  .disclaimer strong {
+    color: #64748b;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #1e293b, transparent);
+    margin: 40px 0;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-eyebrow">System Architecture</div>
+    <div class="header-title">NIGHTWATCHER V3</div>
+    <div class="header-subtitle">Universal Execution Layer · Cloudflare Workers · MCP Server · Alpha Socket</div>
+  </div>
+
+  <!-- ── INGRESS ── -->
+  <div class="section-label">Signal Ingress</div>
+  <div class="ingress-row">
+    <div class="box theme-emerald">
+      <div class="box-title">Alpha Socket</div>
+      <div class="box-desc">POST /api/signal<br>Any language, one HTTP call.<br>Auth: Bearer token.</div>
+      <span class="box-tag">REST · NEW</span>
+    </div>
+    <div class="box theme-sky">
+      <div class="box-title">WebSocket Stream</div>
+      <div class="box-desc">/stream<br>Continuous signal feed for<br>high-frequency sources.</div>
+      <span class="box-tag">WS</span>
+    </div>
+    <div class="box theme-violet">
+      <div class="box-title">MCP Client</div>
+      <div class="box-desc">signal-submit tool<br>LLM agents with full<br>tool orchestration.</div>
+      <span class="box-tag">MCP · 50+ Tools</span>
+    </div>
+  </div>
+
+  <!-- Arrow down -->
+  <div class="flow-arrow">
+    <div class="arrow-line"></div>
+    <div class="arrow-tip"></div>
+  </div>
+  <div class="arrow-label">signal inserted → D1 alpha_signals</div>
+  <div class="flow-arrow">
+    <div class="arrow-line"></div>
+    <div class="arrow-tip"></div>
+  </div>
+
+  <!-- ── ALPHA SOCKET DETAIL ── -->
+  <div class="alpha-socket">
+    <div class="alpha-socket-title">Alpha Socket — POST /api/signal</div>
+    <div class="alpha-socket-sub">External signal ingress endpoint. Any language, no MCP client required.</div>
+    <div class="interface-row">
+      <div class="iface-box">
+        <div class="iface-method">POST</div>
+        <div class="iface-path">/api/signal</div>
+        <div class="iface-desc">Submit a new signal. Returns signal_id + expires_in_seconds.</div>
+      </div>
+      <div class="iface-box">
+        <div class="iface-method">GET</div>
+        <div class="iface-path">/api/signal/:id</div>
+        <div class="iface-desc">Retrieve signal status: pending → aggregated → expired.</div>
+      </div>
+      <div class="iface-box">
+        <div class="iface-method">OPTIONS</div>
+        <div class="iface-path">/api/signal</div>
+        <div class="iface-desc">CORS preflight. ACAO: * on all responses.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MCP AGENT (DURABLE OBJECT) ── -->
+  <div class="section-label">MCP Agent — Durable Object</div>
+  <div class="core-node">
+    <div class="core-node-title">NightwatcherMcpAgent</div>
+    <div class="core-node-sub">Extends McpAgent&lt;Env&gt; · src/mcp/agent.ts · ~50 registered tools</div>
+    <div class="tool-grid">
+      <div class="tool-chip">Auth</div>
+      <div class="tool-chip">Account</div>
+      <div class="tool-chip">Positions</div>
+      <div class="tool-chip">Orders</div>
+      <div class="tool-chip">Risk</div>
+      <div class="tool-chip">Memory</div>
+      <div class="tool-chip">Market Data</div>
+      <div class="tool-chip">Technicals</div>
+      <div class="tool-chip">Events</div>
+      <div class="tool-chip">News</div>
+      <div class="tool-chip">Research</div>
+      <div class="tool-chip">Options</div>
+      <div class="tool-chip">Signals</div>
+      <div class="tool-chip">Utility</div>
+      <div class="tool-chip">catalog-list</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── ORDER EXECUTION FLOW ── -->
+  <div class="section-label">Two-Step Order Execution (Critical Path)</div>
+  <div class="order-flow-row">
+    <div class="box theme-amber">
+      <div class="box-title">orders-preview</div>
+      <div class="box-desc">
+        Validates against PolicyEngine.<br>
+        Generates HMAC-signed approval<br>
+        token (5-min TTL) → stored in D1.
+      </div>
+      <span class="box-tag">Step 1 · HMAC Token</span>
+    </div>
+    <div class="order-flow-arrow">
+      <div class="h-arrow-line"></div>
+      <div class="h-arrow-tip"></div>
+    </div>
+    <div class="box theme-emerald">
+      <div class="box-title">orders-submit</div>
+      <div class="box-desc">
+        Verifies token (not expired / used).<br>
+        Re-checks kill switch.<br>
+        Calls Alpaca API → trade recorded.
+      </div>
+      <span class="box-tag">Step 2 · Execute</span>
+    </div>
+  </div>
+
+  <!-- ── POLICY ENGINE ── -->
+  <div class="section-label">Policy Engine — src/policy/engine.ts</div>
+  <div class="policy-grid">
+    <div class="policy-chip">Kill switch</div>
+    <div class="policy-chip">Loss cooldown</div>
+    <div class="policy-chip">Daily loss limit</div>
+    <div class="policy-chip">Market hours</div>
+    <div class="policy-chip">Symbol allow/deny</div>
+    <div class="policy-chip">Order type restrictions</div>
+    <div class="policy-chip">Notional cap</div>
+    <div class="policy-chip">Position size % equity</div>
+    <div class="policy-chip">Max open positions</div>
+    <div class="policy-chip">Short-sell guard</div>
+    <div class="policy-chip">Buying power</div>
+    <div class="policy-chip">Options DTE + delta</div>
+    <div class="policy-chip">Options strategy</div>
+    <div class="policy-chip">Options exposure</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ── STORAGE ── -->
+  <div class="section-label">Storage Layer</div>
+  <div class="storage-row">
+    <div class="box theme-violet">
+      <div class="box-title">D1 — Relational</div>
+      <div class="box-desc">
+        trades · tool_logs · approvals<br>
+        journal · events · policy_config<br>
+        risk_state · alpha_signals
+      </div>
+      <span class="box-tag">SQLite · Cloudflare</span>
+    </div>
+    <div class="box theme-sky">
+      <div class="box-title">KV — Hot Cache</div>
+      <div class="box-desc">
+        Fast reads for frequently<br>
+        accessed data. Counterparty<br>
+        signal weights · market state.
+      </div>
+      <span class="box-tag">Key-Value</span>
+    </div>
+    <div class="box theme-slate">
+      <div class="box-title">R2 — Artifacts</div>
+      <div class="box-desc">
+        Research reports · backtest<br>
+        results · large payloads that<br>
+        don't fit in D1.
+      </div>
+      <span class="box-tag">Object Storage</span>
+    </div>
+  </div>
+
+  <!-- ── CRON JOBS ── -->
+  <div class="section-label">Scheduled Jobs — src/jobs/cron.ts</div>
+  <table class="cron-table">
+    <thead>
+      <tr>
+        <th>Schedule</th>
+        <th>Task</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>*/5 13-20 * * 1-5</td>
+        <td>SEC EDGAR event ingestion (market hours)</td>
+      </tr>
+      <tr>
+        <td>0 14 * * 1-5</td>
+        <td>Market open prep — cleanup expired approvals</td>
+      </tr>
+      <tr>
+        <td>30 21 * * 1-5</td>
+        <td>Market close cleanup</td>
+      </tr>
+      <tr>
+        <td>0 5 * * *</td>
+        <td>Midnight reset — daily loss counter</td>
+      </tr>
+      <tr>
+        <td>0 * * * *</td>
+        <td>Hourly cache refresh</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+
+  <!-- ── EXECUTION PARTNER ── -->
+  <div class="section-label">Execution Partner</div>
+  <div class="partner-box">
+    <div class="partner-title">Richard Kim — Institutional Execution</div>
+    <div class="partner-sub">HFT clearing infrastructure · V3 institutional execution layer</div>
+    <div class="partner-stats">
+      <div class="stat">
+        <div class="stat-value">14</div>
+        <div class="stat-label">Exchanges</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">+</div>
+        <div class="stat-label">&nbsp;</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">Dark</div>
+        <div class="stat-label">Pools</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">HFT</div>
+        <div class="stat-label">Clearing</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">V3</div>
+        <div class="stat-label">Vision</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DISCLAIMER ── -->
+  <div class="disclaimer">
+    <strong>Note on HFT execution:</strong> NightWatcher V3's signal routing and order management infrastructure is independent software. The partnership with Richard Kim's firm concerns institutional clearing access — NightWatcher itself does not operate as an HFT system or co-located exchange participant. All trades execute via brokerage API (Alpaca) subject to standard market latency. The "dark pool" signal source type refers to signals derived from dark pool print data, not direct dark pool order routing.
+  </div>
+
+</div>
+</body>
+</html>

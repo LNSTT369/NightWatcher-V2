@@ -1,0 +1,42 @@
+{
+  "_watchlist_rule": "Backtest-validated (100+ trades, long-only, costs included). Core: AMZN, AAPL, IRM, SPY, QQQ. High-vol: TSLA, COIN. Watch: PLTR, HOOD, ABNB.",
+  "watchlist": ["AMZN","TSLA","AAPL","IRM","SPY","QQQ","COIN","PLTR","HOOD","ABNB"],
+  "orb_timeframe": "1Hour",
+  "breakout_buffer_pct": 0.1,
+  "rr_default": 2.0,
+  "rr_by_symbol": {
+    "AMZN": 2.0,
+    "TSLA": 3.0,
+    "AAPL": 1.5,
+    "IRM":  2.0,
+    "COIN": 2.0,
+    "HOOD": 1.5,
+    "PLTR": 2.0,
+    "ABNB": 1.5
+  },
+  "max_positions": 3,
+  "notional": 500,
+  "risk_per_trade_usd": 5,
+  "poll_interval_ms": 300000,
+  "entry_cutoff_et": { "hour": 12, "minute": 0 },
+  "time_exit_et":    { "hour": 15, "minute": 55 },
+  "filters": {
+    "adr": {
+      "enabled": true,
+      "lookback_days": 20,
+      "min_pct": 1.5,
+      "caution_pct": 1.2,
+      "exempt_symbols": ["SPY", "QQQ"]
+    },
+    "narrow_range": {
+      "enabled": true,
+      "lookback_days": 20,
+      "percentile_max": 0.5,
+      "exempt_symbols": ["TSLA", "COIN"]
+    },
+    "regime": {
+      "enabled": true,
+      "block_in": ["bearish"]
+    }
+  }
+}

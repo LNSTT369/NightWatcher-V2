@@ -1,0 +1,9 @@
+{
+  "hedge_symbol": "SPY",
+  "hedge_notional": 500,
+  "long_exposure_threshold": 1500,
+  "unhedge_threshold": 800,
+  "poll_interval_ms": 900000,
+  "time_exit_et": { "hour": 15, "minute": 30 },
+  "hedge_regimes": ["trending_bear", "high_volatility", "crisis"]
+}

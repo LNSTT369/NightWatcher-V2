@@ -1,0 +1,10 @@
+{
+  "watchlist": ["AAPL", "MSFT", "NVDA", "AMZN", "META", "GOOGL", "SPY", "QQQ"],
+  "gap_min_pct": 3.0,
+  "gap_hold_tolerance_pct": 0.5,
+  "notional_per_trade": 500,
+  "rr_ratio": 2.0,
+  "max_positions": 1,
+  "poll_interval_ms": 300000,
+  "time_exit_et": { "hour": 11, "minute": 0 }
+}

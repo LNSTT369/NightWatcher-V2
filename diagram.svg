@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="NightWatcher V3 Architecture">
+
+  <rect width="1280" height="640" fill="#0A0A0B"/>
+
+  <defs>
+    <radialGradient id="g1" cx="1152" cy="0" r="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#FFFFFF" stop-opacity="0.07"/>
+      <stop offset="40%"  stop-color="#FFFFFF" stop-opacity="0.02"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="128" cy="0" r="600" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#FFFFFF" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1280" height="640" fill="url(#g1)"/>
+  <rect width="1280" height="640" fill="url(#g2)"/>
+
+  <!-- Section header -->
+  <text x="64" y="44" fill="#F5F5F5" font-family="'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="18" font-weight="600" letter-spacing="1.5">ARCHITECTURE</text>
+  <rect x="64" y="52" width="44" height="2" fill="#C5FF3F"/>
+
+  <!-- Network graph — translate(64, 66) adds left+top padding -->
+  <g transform="translate(64, 66)">
+
+    <!-- ── EDGES (rendered first so nodes sit on top) ── -->
+
+    <!-- alpha-socket → signal-aggregate -->
+    <line x1="56" y1="130" x2="306" y2="210" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- websocket → signal-aggregate -->
+    <line x1="56" y1="290" x2="306" y2="210" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- mcp-client → nightwatcher -->
+    <line x1="56" y1="450" x2="566" y2="290" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- signal-aggregate → nightwatcher -->
+    <line x1="306" y1="210" x2="566" y2="290" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- cron → nightwatcher -->
+    <line x1="306" y1="380" x2="566" y2="290" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- kill-switch → policy-engine -->
+    <line x1="796" y1="60"  x2="796" y2="180" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- nightwatcher → policy-engine -->
+    <line x1="566" y1="290" x2="796" y2="180" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- policy-engine → orders-preview -->
+    <line x1="796" y1="180" x2="976" y2="250" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- orders-preview → orders-submit -->
+    <line x1="976" y1="250" x2="976" y2="400" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- orders-submit → alpaca -->
+    <line x1="976" y1="400" x2="1096" y2="320" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- nightwatcher → d1 -->
+    <line x1="566" y1="290" x2="426" y2="510" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- nightwatcher → kv -->
+    <line x1="566" y1="290" x2="566" y2="510" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+    <!-- nightwatcher → r2 -->
+    <line x1="566" y1="290" x2="706" y2="510" stroke="#5A5E66" stroke-width="1" stroke-dasharray="3 3"/>
+
+    <!-- ── NODES ── -->
+
+    <!-- alpha-socket -->
+    <g>
+      <circle cx="56" cy="130" r="6" fill="#F5F5F5"/>
+      <text x="56" y="154" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">alpha-socket</text>
+    </g>
+
+    <!-- websocket -->
+    <g>
+      <circle cx="56" cy="290" r="6" fill="#F5F5F5"/>
+      <text x="56" y="314" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">websocket</text>
+    </g>
+
+    <!-- mcp-client -->
+    <g>
+      <circle cx="56" cy="450" r="6" fill="#F5F5F5"/>
+      <text x="56" y="474" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">mcp-client</text>
+    </g>
+
+    <!-- signal-aggregate (HUB) -->
+    <g>
+      <circle cx="306" cy="210" r="14" fill="none" stroke="#C5FF3F" stroke-width="1.5"/>
+      <circle cx="306" cy="210" r="6"  fill="#F5F5F5"/>
+      <text x="306" y="234" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">signal-aggregate</text>
+    </g>
+
+    <!-- cron (HUB) -->
+    <g>
+      <circle cx="306" cy="380" r="14" fill="none" stroke="#C5FF3F" stroke-width="1.5"/>
+      <circle cx="306" cy="380" r="6"  fill="#F5F5F5"/>
+      <text x="306" y="404" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">cron</text>
+    </g>
+
+    <!-- nightwatcher (MAIN HUB — larger ring) -->
+    <g>
+      <circle cx="566" cy="290" r="20" fill="none" stroke="#C5FF3F" stroke-width="1.5"/>
+      <circle cx="566" cy="290" r="6"  fill="#F5F5F5"/>
+      <text x="566" y="322" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">nightwatcher</text>
+    </g>
+
+    <!-- policy-engine (HUB) -->
+    <g>
+      <circle cx="796" cy="180" r="14" fill="none" stroke="#C5FF3F" stroke-width="1.5"/>
+      <circle cx="796" cy="180" r="6"  fill="#F5F5F5"/>
+      <text x="796" y="204" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">policy-engine</text>
+    </g>
+
+    <!-- kill-switch -->
+    <g>
+      <circle cx="796" cy="60" r="6" fill="#F5F5F5"/>
+      <text x="796" y="84" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">kill-switch</text>
+    </g>
+
+    <!-- orders-preview -->
+    <g>
+      <circle cx="976" cy="250" r="6" fill="#F5F5F5"/>
+      <text x="976" y="274" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">orders-preview</text>
+    </g>
+
+    <!-- orders-submit -->
+    <g>
+      <circle cx="976" cy="400" r="6" fill="#F5F5F5"/>
+      <text x="976" y="424" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">orders-submit</text>
+    </g>
+
+    <!-- alpaca -->
+    <g>
+      <circle cx="1096" cy="320" r="6" fill="#F5F5F5"/>
+      <text x="1096" y="344" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">alpaca</text>
+    </g>
+
+    <!-- d1 -->
+    <g>
+      <circle cx="426" cy="510" r="6" fill="#F5F5F5"/>
+      <text x="426" y="534" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">d1</text>
+    </g>
+
+    <!-- kv -->
+    <g>
+      <circle cx="566" cy="510" r="6" fill="#F5F5F5"/>
+      <text x="566" y="534" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">kv</text>
+    </g>
+
+    <!-- r2 -->
+    <g>
+      <circle cx="706" cy="510" r="6" fill="#F5F5F5"/>
+      <text x="706" y="534" fill="#F5F5F5" font-family="'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13" font-weight="600" text-anchor="middle">r2</text>
+    </g>
+
+  </g>
+</svg>

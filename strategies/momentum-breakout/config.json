@@ -1,0 +1,11 @@
+{
+  "watchlist": ["AAPL", "MSFT", "NVDA", "AMZN", "META", "GOOGL", "SPY", "QQQ"],
+  "rsi_min": 40,
+  "rsi_max": 65,
+  "min_confidence": 0.60,
+  "max_positions": 2,
+  "notional_per_trade": 500,
+  "allowed_regimes": ["trending_bull", "low_volatility", "range_bound"],
+  "twap_duration_minutes": 30,
+  "twap_interval_minutes": 10
+}

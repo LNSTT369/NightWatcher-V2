@@ -1,0 +1,10 @@
+{
+  "watchlist": ["AAPL", "MSFT", "NVDA", "AMZN", "META", "GOOGL"],
+  "sma_deviation_pct": 3.0,
+  "rsi_oversold": 40,
+  "notional_per_trade": 500,
+  "max_positions": 2,
+  "poll_interval_ms": 300000,
+  "time_exit_et": { "hour": 15, "minute": 30 },
+  "allowed_regimes": ["range_bound", "high_volatility"]
+}
