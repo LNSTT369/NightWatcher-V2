@@ -1,5 +1,9 @@
 <div align="center">
 
+<img src="assets/dashboard.png" width="100%" alt="NightWatcher V2 Dashboard" />
+
+<br>
+
 # NIGHTWATCHER V2
 
 **A multi-agent autonomous trading system built on Alpaca.**
