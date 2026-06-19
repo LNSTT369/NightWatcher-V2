@@ -1,0 +1,30 @@
+Subject: Guest Post & Code Delivery: Building NightWatcher V2 — A Multi-Agent Trading System with Alpaca
+
+Hi Alpaca Editorial & Developer Relations Team,
+
+I wanted to follow up on our guest article and deliver the completed drafts and code repository for **NightWatcher V2**.
+
+The article is finalized, and the companion code has been pushed to a dedicated staging repository that is clean, verified, and ready for publication:
+
+* **Staging Code Repository**: https://github.com/LNSTT369/NightWatcher-V2.git
+* **Article Draft**: (I have attached the HTML draft and original screenshots including `dashboard.png` and terminal logs)
+
+### Why NightWatcher V2 Matters to the Alpaca Developer Community:
+This article is a deep-dive developer tutorial on how to construct a robust, production-grade **autonomous multi-agent trading system** from scratch using Node.js, Cloudflare Workers (as an MCP Server), and React. 
+
+Unlike basic sentiment-following bots, NightWatcher separates intelligence from execution. It scans StockTwits for retail sentiment ("The Eyes"), routes catalysts through an LLM Catalyst Filter for fundamental analysis ("The Brain"), and enforces strict broker-level risk controls through the Alpaca API before firing off programmatic limit/market orders ("The Hands").
+
+### Key Highlights of the Alpaca Integration Covered in the Article:
+* **Developer-First Infrastructure**: How Alpaca's paper trading environment and REST APIs enable seamless validation of autonomous agents without financial risk.
+* **Unified Equities & 24/7 Crypto**: Utilizing Alpaca's cross-asset capabilities to trade traditional equities during market hours and pivot to crypto pairs (BTC, ETH, SOL) overnight.
+* **State Synchronization**: Paging and syncing real-time portfolio metrics (equity, cash, buying power, and open positions) directly into a beautiful, steel-blue dashboard HUD.
+* **Layered Safety Model**: Utilizing the Alpaca API to enforce position sizing limits, stop-loss triggers, and transaction approval tokens.
+
+The codebase is fully operational and has been stress-tested. It includes a `--mock` flag for the dashboard API server so that reviewers (and future readers) can instantly run the interactive React HUD with realistic mock data and without needing live API keys.
+
+Please let me know if you would like any editorial revisions, or if we can jump on a quick call to give you a live demo of the agent in action!
+
+Best regards,
+
+Chiranjeev Shah
+https://github.com/LNSTT369
