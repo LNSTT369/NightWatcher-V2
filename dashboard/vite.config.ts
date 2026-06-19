@@ -7,7 +7,7 @@ const agentPort = process.env.AGENT_PORT || '3001'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    port: 3000,
+    port: 3005,
     proxy: {
       '/api': {
         target: `http://localhost:${agentPort}`,
